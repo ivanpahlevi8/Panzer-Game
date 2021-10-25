@@ -1,2 +1,2 @@
 # Panzer-Game
-Game Develop Using PYGAME
+Game Developed Using PYGAME
