@@ -3,8 +3,9 @@ from pygame.sprite import Sprite
 from InterfaceActivation import InterfaceActivation
 
 
-class TankAllies:
+class TankAllies(Sprite):
     def __init__(self, ai_game):
+        super().__init__()
         self.screen = ai_game.screen
         self.screen_rect = self.screen.get_rect()
         self.setting = ai_game.setting
@@ -30,7 +31,7 @@ class TankAllies:
             self.screen.blit(self.image, self.rect)
 
     def update_ship(self):
-        if self.move_up and self.rect.y > 0:
+        if self.move_up and self.rect.y > 80:
             self.y -= self.setting.get_ship_speed()
         elif self.move_right and self.rect.right < self.screen_rect.right:
             self.x += self.setting.get_ship_speed()
@@ -57,12 +58,13 @@ class TankOpening:
         self.rect2 = self.image2.get_rect()
         self.rect3 = self.image3.get_rect()
 
-        self.rect1.midright = self.screen_rect.midright
-        self.rect2.midright = (self.setting.display_width - 20, 10)
-        self.rect3.midright = (self.setting.display_width - 20, self.setting.display_height - 30)
+        self.rect1.midright = (self.setting.display_width - 20, self.setting.display_height / 2)
+        self.rect2.midright = (self.setting.display_width - 20, self.setting.display_height / 2 + 200)
+        self.rect3.midright = (self.setting.display_width - 20, self.setting.display_height / 2 - 200)
 
         self.x1 = float(self.rect1.x)
         self.x2 = float(self.rect2.x)
+
         self.x3 = float(self.rect3.x)
 
         self.active = True
@@ -81,9 +83,9 @@ class TankOpening:
             return True
 
     def update_ship(self):
-        self.x1 = self.x1 + 5.0 * self.setting.edges_tank_opening
-        self.x2 = self.x2 + 5.0 * self.setting.edges_tank_opening
-        self.x3 = self.x3 + 5.0 * self.setting.edges_tank_opening
+        self.x1 = self.x1 + self.setting.tank_opening_speed * self.setting.edges_tank_opening
+        self.x2 = self.x2 + self.setting.tank_opening_speed * self.setting.edges_tank_opening
+        self.x3 = self.x3 + self.setting.tank_opening_speed * self.setting.edges_tank_opening
 
         self.rect1.x = self.x1
         self.rect2.x = self.x2
@@ -113,3 +115,26 @@ class River(Sprite):
         self.x = float(self.rect.x)
         self.y = float(self.rect.y)
 
+class Highway(Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('highway.png')
+        self.rect = self.image.get_rect()
+
+        self.rect.x = self.rect.width
+        self.rect.y = self.rect.height
+
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
+
+class Cobblestone(Sprite):
+    def __init__(self):
+        super().__init__()
+        self.image = pygame.image.load('cobble.png')
+        self.rect = self.image.get_rect()
+
+        self.rect.x = self.rect.width
+        self.rect.y = self.rect.height
+
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
