@@ -182,6 +182,11 @@ class LevelInterface:
         self.border_rect.center = (self.screen_rect.width / 2, 70)
         self.back_rect.center = (self.screen_rect.width / 2, (self.screen_rect.height / 2) + 2.8 * (self.button_height))
 
+        # Game Over Tag, join with interfaceLevel
+        self.game_over_rect = pygame.Rect(0, 0, self.label_width, self.label_height)
+        self.game_over_present = False
+        self.game_over_rect.center = (self.setting.display_width / 2, self.setting.display_height / 2)
+
         self.level_present = False
         self._prep_msg()
 
@@ -207,6 +212,12 @@ class LevelInterface:
         self.level_screen_rect_msg_rect.center = (self.screen_rect.width / 2, 40)
         self.back_rect_msg_rect.center = (self.screen_rect.width / 2, (self.screen_rect.height / 2) + 2.8 * (self.button_height))
 
+        # Game Over Tag, join with interfaceLevel
+        self.game_over_msg = self.font.render("Game Over", True, self.text_color, self.level3_color)
+        self.game_over_msg_rect = self.game_over_msg.get_rect()
+        self.game_over_msg_rect.center = (self.setting.display_width / 2, self.setting.display_height / 2)
+
+
     def draw_container(self):
         if self.level_present:
             self.screen.fill(self.color, self.container)
@@ -219,6 +230,11 @@ class LevelInterface:
             self.screen.blit(self.level2_rect_msg, self.level2_rect_msg_rect)
             self.screen.blit(self.level3_rect_msg, self.level3_rect_msg_rect)
             self.screen.blit(self.back_rect_msg, self.back_rect_msg_rect)
+
+        elif self.game_over_present:
+            self.screen.fill(self.level3_color, self.game_over_rect)
+            self.screen.blit(self.game_over_msg, self.game_over_msg_rect)
+
 
 
         self.screen.fill(self.level_color, self.level_screen_rect)

@@ -30,6 +30,11 @@ class TankAllies(Sprite):
         if self.active:
             self.screen.blit(self.image, self.rect)
 
+    def center_ship(self):
+        self.rect.midleft = self.screen_rect.midleft
+        self.x = float(self.rect.x)
+        self.y = float(self.rect.y)
+
     def update_ship(self):
         if self.move_up and self.rect.y > 80:
             self.y -= self.setting.get_ship_speed()

@@ -1,4 +1,6 @@
 import sys
+import time
+
 import pygame
 from Setting import Settings
 from ContainerInterface import ContainerInterface, SettingInterface, LevelInterface
@@ -65,6 +67,19 @@ class MainClass :
         self.button_maps1 = False
         self.button_maps2 = False
         self.button_maps3 = False
+        self.clock = pygame.time.Clock()
+        self.time = time
+
+        self.SHOOT_SOUND = pygame.mixer.Sound('fire.wav')
+        self.SHOOT_SOUND.set_volume(0.2)
+        self.EXPLODE_SOUND = pygame.mixer.Sound('explode.wav')
+        self.EXPLODE_SOUND.set_volume(0.2)
+        self.IDLE_SOUND = pygame.mixer.Sound('idle.wav')
+        self.IDLE_SOUND.set_volume(0.6)
+        self.CLICK_SOUND = pygame.mixer.Sound('click.wav')
+        self.CLICK_SOUND.set_volume(0.8)
+        self.LEVEL_SOUND = pygame.mixer.Sound('up.wav')
+        self.LEVEL_SOUND.set_volume(1.0)
 
         self._create_fleet_red_tank()
 
@@ -107,7 +122,7 @@ class MainClass :
     #MAIN CONTAINER
     def _check_play_button(self, mouse_event):
         button = self.containerInterface.play_button_rect.collidepoint(mouse_event)
-
+        self.CLICK_SOUND.play()
         if button and not self.activation.game_active:
             self.activation.game_active = True
             self.screen.fill((0, 0, 0))
@@ -122,18 +137,20 @@ class MainClass :
 
     def _check_exit_button(self, mouse_event):
         button = self.containerInterface.exit_button_rect.collidepoint(mouse_event)
-
+        self.CLICK_SOUND.play()
         if button and not self.activation.game_active:
             sys.exit()
 
     def _check_setting_button(self, mouse_event):
         button = self.containerInterface.setting_button_rect.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and not self.settingInterface.setting_present:
             self.settingInterface.setting_present = True
             self.containerInterface.menu_present = False
             
     def _check_level_button(self, mouse_event):
         button = self.containerInterface.level_button_rect.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and not self.levelInterface.level_present:
             self.settingInterface.setting_present = False
             self.containerInterface.menu_present = False
@@ -142,12 +159,14 @@ class MainClass :
     #For Level Interface
     def _check_back_rect(self, mouse_event):
         button = self.levelInterface.back_rect.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.levelInterface.level_present:
             self.levelInterface.level_present = False
             self.containerInterface.menu_present = True
 
     def _check_level1_rect(self, mouse_event):
         button = self.levelInterface.level1_rect.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.levelInterface.level_present:
             self.setting.level_game = "EASY"
             self.levelInterface.level_color = (144, 238, 144)
@@ -163,6 +182,7 @@ class MainClass :
 
     def _check_level2_rect(self, mouse_event):
         button = self.levelInterface.level2_rect.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.levelInterface.level_present:
             self.setting.level_game = "MEDIUM"
             self.levelInterface.level_color = (251, 160, 122)
@@ -174,11 +194,12 @@ class MainClass :
 
     def _check_level3_rect(self, mouse_event):
         button = self.levelInterface.level3_rect.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.levelInterface.level_present:
             self.setting.level_game = "HARD"
             self.levelInterface.level_color = (250, 69, 1)
-            self.setting.ship_speed = 7.0
-            self.setting.bullet_speed = 9.0
+            self.setting.ship_speed = 3.0
+            self.setting.bullet_speed = 5.0
             self.setting.red_ship_speed = 2.0
             self.setting.blue_ship_speed = 1.5
             self.setting.green_ship_speed = 1.0
@@ -186,12 +207,14 @@ class MainClass :
     # From Setting Interface
     def _check_back_button(self, mouse_event):
         button = self.settingInterface.button_back.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.settingInterface.setting_present:
             self.settingInterface.setting_present = False
             self.containerInterface.menu_present = True
 
     def _check_button_maps1(self, mouse_event):
         button = self.settingInterface.button_maps1.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.settingInterface.setting_present and not self.button_maps1:
             for road in self.highway.copy():
                 self.highway.remove(road)
@@ -210,6 +233,7 @@ class MainClass :
 
     def _check_button_maps2(self, mouse_event):
         button = self.settingInterface.button_maps2.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.settingInterface.setting_present and not self.button_maps2:
             for road in self.dirty_road.copy():
                 self.dirty_road.remove(road)
@@ -233,6 +257,7 @@ class MainClass :
 
     def _check_button_maps3(self, mouse_event):
         button = self.settingInterface.button_maps3.collidepoint(mouse_event)
+        self.CLICK_SOUND.play()
         if button and self.settingInterface.setting_present and not self.button_maps3:
             for road in self.dirty_road.copy():
                 self.dirty_road.remove(road)
@@ -392,7 +417,7 @@ class MainClass :
 
         available_river_y = self.setting.display_height // red_tank_height
 
-        for y in range(available_river_y - 1):
+        for y in range(available_river_y - 5):
             self._create_red_tank(y)
 
     def _create_red_tank(self, num_y):
@@ -413,7 +438,7 @@ class MainClass :
 
         available_river_y = self.setting.display_height // blue_tank_height
 
-        for y in range(available_river_y - 1):
+        for y in range(available_river_y - 5):
             self._create_blue_tank(y)
 
     def _create_blue_tank(self, num_y):
@@ -434,7 +459,7 @@ class MainClass :
 
         available_river_y = self.setting.display_height // green_tank_height
 
-        for y in range(available_river_y - 1):
+        for y in range(available_river_y - 5):
             self._create_green_tank(y)
 
     def _create_green_tank(self, num_y):
@@ -449,10 +474,127 @@ class MainClass :
 
         self.green_tank.add(new_green_tank)
 
+    def _update_tank(self):
+        self._check_left_tank()
+
+        for redTank in self.red_tank.sprites():
+            redTank.update()
+        for blueTank in self.blue_tank.sprites():
+            blueTank.update()
+        for greenTank in self.green_tank.sprites():
+            greenTank.update()
+
+        self._check_tank_collide()
+
+
+
+    def _check_left_tank(self):
+        screen = self.screen.get_rect()
+
+        for red in self.red_tank.sprites():
+            if red.rect.midleft <= screen.midleft:
+                self._check_ship_hit()
+                break
+
+        for blue in self.blue_tank.sprites():
+            if blue.rect.midleft <= screen.midleft:
+                self._check_ship_hit()
+                break
+
+        for green in self.green_tank.sprites():
+            if green.rect.midleft <= screen.midleft:
+                self._check_ship_hit()
+                break
+
+    def _check_tank_collide(self):
+
+        if pygame.sprite.spritecollideany(self.tankAllies, self.red_tank): #jika kapal collide dengan salah satu dari alien
+            self.EXPLODE_SOUND.play()
+            print("Red Hit")
+            self._check_ship_hit()
+        elif pygame.sprite.spritecollideany(self.tankAllies, self.blue_tank):
+            self.EXPLODE_SOUND.play()
+            self._check_ship_hit()
+        elif pygame.sprite.spritecollideany(self.tankAllies, self.green_tank):
+            self.EXPLODE_SOUND.play()
+            self._check_ship_hit()
+
+    def _check_ship_hit(self):
+
+        for red in self.red_tank.sprites():
+            self.red_tank.remove(red)
+
+
+        for blue in self.blue_tank.sprites():
+            self.blue_tank.remove(blue)
+
+        for green in self.green_tank.sprites():
+            self.green_tank.remove(green)
+
+        for bullet in self.bullets.sprites():
+            self.bullets.remove(bullet)
+
+        self.tankAllies.center_ship()
+
+
+        if self.stats.ships_left > 0:
+            self.time.sleep(1)
+            self._create_fleet_red_tank()
+            self._create_fleet_blue_tank()
+            self._create_fleet_green_tank()
+            self.stats.ships_left -= 1
+            print(self.stats.ships_left)
+            self.sb.prep_ship()
+            self.sb.show_score()
+
+        else:
+            self.scene_exit = False
+            time = 14000
+            '''
+            while not self.scene_exit:
+                self.levelInterface.game_over_present = True
+                self.levelInterface.draw_container()
+
+                pygame.display.update()
+
+                passed_time = self.clock.tick(60)
+                print(passed_time)
+                time -= passed_time
+                if time <= 0:
+                    self.sceneExit = True
+                    print("Done man")
+                    break
+            '''
+            self.levelInterface.game_over_present = True
+            self.levelInterface.draw_container()
+            # if you want to updating something new in screen you have to flip it
+            # i use flip because after delay for 2 second, the programs doesnt access the update screen method that i wrote
+            # in below this section. So i need to re write the display flip only for this section because it cannot
+            # access the display update while the profram stop
+            pygame.display.flip()
+            print("start")
+            pygame.time.wait(2000)
+            print("stop")
+            self.levelInterface.game_over_present = False
+            self._create_fleet_red_tank()
+            self._create_fleet_blue_tank()
+            self._create_fleet_green_tank()
+            self.activation.game_active = False
+            self.tankAllies.active = False
+            self.containerInterface.menu_present = True
+            self.tankOpening.active = True
+            self.tankOpening.update_ship()
+            self.stats.ships_left = self.setting.ship_limit
+            self.stats.score = 0
+            self.stats.level = 1
+            self.sb.prep_ship()
+            self.sb.show_score()
+
     # To Make A Bullet When You Pressed Space
     def _fire_bullet(self):
         new_bullet = Bullet(self)
         self.bullets.add(new_bullet)
+        self.SHOOT_SOUND.play()
 
     def _update_bullets(self):
         self.bullets.update()
@@ -470,45 +612,40 @@ class MainClass :
 
         #Red Tank
         if collisions_red:
+            self.EXPLODE_SOUND.play()
             for red_tank in collisions_red.values():
                 self.stats.score += self.setting.red_tank_point * len(red_tank)
+                self.red_tank.remove(red_tank)
             self.sb.prep_score()
             self.sb.check_high_score()
 
-        if not self.red_tank:  # jika alien habis pada layar
-            self.bullets.empty()
-            self._create_fleet_red_tank()
-            self.setting.ship_speed += 1
-            self.stats.level += 1
-            self.sb.prep_level()
-
         #Blue Tank
         if collisions_blue:
+            self.EXPLODE_SOUND.play()
             for blue_tank in collisions_blue.values():
                 self.stats.score += self.setting.blue_tank_point * len(blue_tank)
             self.sb.prep_score()
             self.sb.check_high_score()
 
-        if not self.blue_tank:  # jika alien habis pada layar
-            self.bullets.empty()
-            self._create_fleet_red_tank()
-            self.setting.ship_speed += 1
-            self.stats.level += 1
-            self.sb.prep_level()
-
         #Green Tank
         if collisions_green:
+            self.EXPLODE_SOUND.play()
             for green_tank in collisions_green.values():
                 self.stats.score += self.setting.green_tank_point * len(green_tank)
             self.sb.prep_score()
             self.sb.check_high_score()
 
-        if not self.green_tank:  # jika alien habis pada layar
+        #Check Jumlah Tank Musuh
+        if not self.red_tank and not self.blue_tank and not self.green_tank:  # jika alien habis pada layar
+            self.LEVEL_SOUND.play()
             self.bullets.empty()
             self._create_fleet_red_tank()
+            self._create_fleet_blue_tank()
+            self._create_fleet_green_tank()
             self.setting.ship_speed += 1
             self.stats.level += 1
             self.sb.prep_level()
+            self.sb.show_score()
 
     #Bullet maker Above
         
@@ -545,12 +682,9 @@ class MainClass :
             self.red_tank.draw(self.screen)
             self.blue_tank.draw(self.screen)
             self.green_tank.draw(self.screen)
-            for redTank in self.red_tank.sprites():
-                redTank.update()
-            for blueTank in self.blue_tank.sprites():
-                blueTank.update()
-            for greenTank in self.green_tank.sprites():
-                greenTank.update()
+            self._update_tank()
+
+
 
         
         #For Menu Interface

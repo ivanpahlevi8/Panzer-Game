@@ -4,7 +4,7 @@ from TankAllies import TankAllies
 
 class ScoreBoard():
     def __init__(self, ai_game):
-        self.ships = pygame.sprite.Group()
+
         self.screen = ai_game.screen
         self.setting = ai_game.setting
         self.screen_rect = self.screen.get_rect()
@@ -45,6 +45,7 @@ class ScoreBoard():
         self.level_image_rect.top = self.screen_rect.top + 20
 
     def prep_ship(self):
+        self.ships = pygame.sprite.Group()
         for ship_number in range(self.stats.ships_left):
             tank_allies = TankAllies(self.ai_game) #membuat objek ship dari class Ship
             tank_allies.rect.x = 110 + ship_number * tank_allies.rect.width #memposisikan korrdinat x dari rect berada pada 110 ditambah ship * ship.rect.width
